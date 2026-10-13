@@ -1,0 +1,91 @@
+{
+  "manifest_version": 3,
+  "name": "ReelPilot – Auto Scroll for Instagram Reels",
+  "short_name": "ReelPilot",
+  "version": "1.0.0",
+  "description": "Auto-scroll Instagram Reels with on-screen controls, Picture-in-Picture and background play. Not affiliated with Instagram.",
+  "minimum_chrome_version": "111",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "ReelPilot – Auto Scroll for Reels",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.js"
+  },
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://www.instagram.com/*",
+    "*://instagram.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.instagram.com/*",
+        "*://instagram.com/*"
+      ],
+      "js": [
+        "src/page/page-hooks.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "*://www.instagram.com/*",
+        "*://instagram.com/*"
+      ],
+      "js": [
+        "src/shared/constants.js",
+        "src/shared/icons.js",
+        "src/shared/ui-css.js",
+        "src/shared/controls.js",
+        "src/content/engine.js",
+        "src/content/overlay.js",
+        "src/content/main.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ],
+  "commands": {
+    "toggle-autoscroll": {
+      "suggested_key": {
+        "default": "Alt+Shift+S"
+      },
+      "description": "Toggle auto-scroll"
+    },
+    "next-reel": {
+      "suggested_key": {
+        "default": "Alt+Shift+Down"
+      },
+      "description": "Next reel"
+    },
+    "prev-reel": {
+      "suggested_key": {
+        "default": "Alt+Shift+Up"
+      },
+      "description": "Previous reel"
+    },
+    "play-pause": {
+      "suggested_key": {
+        "default": "Alt+Shift+K"
+      },
+      "description": "Play / pause the current reel"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "reelpilot-store-assets",
+  "private": true,
+  "type": "module",
+  "description": "Renders Chrome Web Store screenshots and promo tiles from the extension's real UI.",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.43.1"
+  }
+}

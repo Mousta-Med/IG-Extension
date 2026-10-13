@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>ReelPilot</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="rp-ui pp" id="app">
+    <header class="pp-head">
+      <span class="pp-logo" id="logo"></span>
+      <span class="pp-brand">
+        <span class="pp-name">ReelPilot</span>
+        <span class="pp-sub">Reels autopilot</span>
+      </span>
+      <span class="pp-chip" id="chip" data-tone="idle"><i></i><b id="chipText">Idle</b></span>
+      <button class="pp-icon" id="focusTab" title="Go to the Instagram tab" aria-label="Go to the Instagram tab" hidden><span data-icon="external"></span></button>
+    </header>
+
+    <section class="pp-view" id="viewEmpty" hidden>
+      <div class="pp-hero">
+        <div class="pp-hero-art" id="heroArt"></div>
+        <h1 id="emptyTitle">Open Instagram Reels</h1>
+        <p id="emptyText">A floating control panel on top of the reels that keeps them rolling, even in a background tab.</p>
+        <button class="pp-cta" id="emptyBtn"><span id="emptyBtnIcon"></span><span id="emptyBtnText">Open Reels</span></button>
+      </div>
+      <ul class="pp-features" id="features">
+        <li><span data-icon="zap"></span>Auto-scroll after N plays or on a timer</li>
+        <li><span data-icon="reels"></span>Keeps playing when you switch tabs</li>
+        <li><span data-icon="keyboard"></span>Shortcuts &amp; media keys work from any tab</li>
+      </ul>
+    </section>
+
+    <section class="pp-view" id="viewControls" hidden>
+      <div class="pp-card" id="controls"></div>
+      <div class="pp-hint" id="hint" hidden>
+        <span data-icon="pip"></span>
+        <span class="pp-hint-text" id="hintText"></span>
+        <button class="pp-hint-btn" id="hintBtn">Go to tab</button>
+      </div>
+      <div class="pp-actions" id="panelRow" hidden>
+        <button class="pp-btn" id="showPanel"><span data-icon="reels"></span>Show the panel on the page</button>
+      </div>
+    </section>
+
+    <footer class="pp-foot" id="foot">
+      <button class="pp-foot-head" id="keysToggle" aria-expanded="false">
+        <span data-icon="keyboard"></span>
+        <span class="pp-foot-title">Shortcuts</span>
+        <span class="pp-foot-peek" id="keysPeek"></span>
+        <span data-icon="chevron"></span>
+      </button>
+      <div class="pp-foot-body"><div class="pp-foot-inner">
+        <div class="pp-keys" id="keys"></div>
+        <button class="pp-link" id="editKeys">Customize shortcuts →</button>
+      </div></div>
+    </footer>
+  </div>
+
+  <script src="../shared/constants.js"></script>
+  <script src="../shared/icons.js"></script>
+  <script src="../shared/ui-css.js"></script>
+  <script src="../shared/controls.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

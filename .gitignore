@@ -1,0 +1,22 @@
+# Dependencies for the store/video renderers (npm install in tools/store)
+node_modules/
+
+# Build output — rebuild with: python tools/build_zip.py
+dist/
+
+# Render intermediates
+store/video/*.wav
+store/video/cues.json
+store/video/preview-*.png
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.log

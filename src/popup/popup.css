@@ -1,0 +1,141 @@
+/* ReelPilot — popup shell. Control styles come from src/shared/ui-css.js. */
+html, body { margin: 0; padding: 0; background: #0b0b0f; }
+/* Chrome caps popups at 600px tall; when Options are open the page scrolls — keep the bar subtle. */
+html { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .16) transparent; }
+body { width: 360px; color: #f6f6f8; }
+
+/* overflow: hidden clips the header glow — otherwise Chrome widens the popup to fit it. */
+.pp { position: relative; padding: 14px 14px 12px; isolation: isolate; overflow: hidden; }
+.pp::before {
+  content: ""; position: absolute; z-index: -1; left: -30%; right: -30%; top: -160px; height: 320px;
+  background:
+    radial-gradient(closest-side at 70% 50%, rgba(214, 41, 118, .32), transparent),
+    radial-gradient(closest-side at 30% 60%, rgba(250, 126, 30, .18), transparent),
+    radial-gradient(closest-side at 90% 30%, rgba(79, 91, 213, .22), transparent);
+  filter: blur(12px); pointer-events: none;
+}
+
+/* Header */
+.pp-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.pp-icon {
+  width: 32px; height: 32px; flex: none; border-radius: 10px; display: grid; place-items: center;
+  color: var(--rp-text-2); background: var(--rp-surface); border: 1px solid var(--rp-border) !important;
+  transition: background .15s, color .15s;
+}
+.pp-icon:hover { background: var(--rp-surface-hover); color: var(--rp-text); }
+.pp-icon svg { width: 15px; height: 15px; }
+.pp-logo { width: 36px; height: 36px; flex: none; filter: drop-shadow(0 8px 16px rgba(214, 41, 118, .5)); }
+.pp-logo svg, .pp-hero-art svg { width: 100%; height: 100%; }
+.pp-brand { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.pp-name { font-weight: 760; font-size: 15.5px; letter-spacing: -.015em; }
+.pp-sub { font-size: 11px; color: var(--rp-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pp-chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 999px;
+  background: rgba(255, 255, 255, .06); border: 1px solid var(--rp-border);
+  font-size: 11px; font-weight: 650; color: var(--rp-text-2); white-space: nowrap;
+}
+.pp-chip b { font-weight: 650; }
+.pp-chip i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pp-chip[data-tone="live"] { color: #ff5c93; border-color: rgba(255, 92, 147, .35); background: rgba(255, 46, 116, .1); }
+.pp-chip[data-tone="live"] i { animation: pp-pulse 1.6s ease-out infinite; }
+.pp-chip[data-tone="play"] { color: var(--rp-ok); }
+
+/* Controls card */
+.pp-card {
+  padding: 14px 14px 4px; border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .02));
+  border: 1px solid var(--rp-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), 0 20px 40px -24px rgba(0, 0, 0, .8);
+}
+.pp-card .rp-bar-fill { transition: clip-path .25s linear; }
+.pp-card .rp-bar-knob { transition: opacity .15s, transform .2s var(--rp-spring), left .25s linear; }
+.pp-card .rp-transport { padding: 6px 0 12px; }
+.pp-card .rp-settings { gap: 6px; padding-top: 12px; }
+
+.pp-actions { display: grid; margin-top: 10px; }
+
+.pp-hint {
+  display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 10px 10px 10px 12px; border-radius: 14px;
+  background: linear-gradient(120deg, rgba(250, 126, 30, .14), rgba(214, 41, 118, .16));
+  border: 1px solid rgba(255, 92, 147, .3); animation: pp-hint-in .35s var(--rp-spring);
+}
+.pp-hint > span:first-child { color: #ff8db4; flex: none; }
+.pp-hint svg { width: 18px; height: 18px; }
+.pp-hint-text { flex: 1; font-size: 11.5px; line-height: 1.4; color: var(--rp-text-2); }
+.pp-hint-btn {
+  flex: none; height: 30px; padding: 0 12px; border-radius: 10px; font-size: 11.5px; font-weight: 700;
+  color: #fff; background: var(--rp-grad); box-shadow: 0 8px 18px -8px rgba(214, 41, 118, .9);
+}
+@keyframes pp-hint-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.pp-btn {
+  height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 7px;
+  background: var(--rp-surface); border: 1px solid var(--rp-border) !important;
+  font-weight: 650; font-size: 12px; color: var(--rp-text-2); transition: background .15s, color .15s;
+}
+.pp-btn:hover { background: var(--rp-surface-hover); color: var(--rp-text); }
+.pp-btn svg, .pp-link svg, .pp-features svg { width: 15px; height: 15px; }
+
+/* Empty / hero states */
+.pp-hero { text-align: center; padding: 14px 8px 6px; }
+.pp-hero-art {
+  width: 74px; height: 74px; margin: 0 auto 16px;
+  filter: drop-shadow(0 16px 30px rgba(214, 41, 118, .55));
+  animation: pp-float 4.5s ease-in-out infinite;
+}
+.pp-hero h1 { margin: 0 0 6px; font-size: 17px; font-weight: 760; letter-spacing: -.02em; }
+.pp-hero p { margin: 0 auto 16px; max-width: 280px; color: var(--rp-text-2); font-size: 12.5px; line-height: 1.5; }
+.pp-cta {
+  height: 42px; padding: 0 20px; border-radius: 14px; display: inline-flex; align-items: center; gap: 8px;
+  background: var(--rp-grad); color: #fff; font-weight: 700; font-size: 13px;
+  box-shadow: 0 14px 28px -10px rgba(214, 41, 118, .8), inset 0 1px 0 rgba(255, 255, 255, .25);
+  transition: transform .2s var(--rp-spring), box-shadow .2s;
+}
+.pp-cta:hover { transform: translateY(-1px); box-shadow: 0 18px 34px -10px rgba(214, 41, 118, .9), inset 0 1px 0 rgba(255, 255, 255, .25); }
+.pp-cta:active { transform: scale(.97); }
+.pp-cta svg { width: 17px; height: 17px; }
+
+.pp-features {
+  list-style: none; margin: 16px 0 0; padding: 12px; border-radius: 16px;
+  background: rgba(255, 255, 255, .035); border: 1px solid var(--rp-border);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.pp-features li { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--rp-text-2); }
+.pp-features li > span {
+  width: 26px; height: 26px; border-radius: 8px; flex: none; display: grid; place-items: center;
+  background: var(--rp-grad-soft); color: #fff;
+}
+
+/* Footer */
+.pp-foot { margin-top: 10px; border-top: 1px solid var(--rp-border); }
+.pp-foot-head {
+  width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 2px 2px;
+  font-size: 12px; font-weight: 650; color: var(--rp-text-2); transition: color .15s;
+}
+.pp-foot-head:hover { color: var(--rp-text); }
+.pp-foot-head svg { width: 15px; height: 15px; }
+.pp-foot-title { flex: 1; text-align: left; }
+.pp-foot-peek { display: inline-flex; gap: 3px; transition: opacity .2s; }
+.pp-foot .rp-chev { transition: transform .3s var(--rp-ease); }
+.pp-foot.open .rp-chev { transform: rotate(180deg); }
+.pp-foot.open .pp-foot-peek { opacity: 0; }
+.pp-foot-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s var(--rp-ease); }
+.pp-foot.open .pp-foot-body { grid-template-rows: 1fr; }
+.pp-foot-inner { overflow: hidden; min-height: 0; }
+.pp-keys { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 14px; padding-top: 10px; }
+.pp-key { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 11px; color: var(--rp-text-3); white-space: nowrap; }
+.pp-key span:last-child { display: inline-flex; gap: 3px; }
+.pp-key kbd, .pp-foot-peek kbd {
+  font: 650 10px/1 var(--rp-font); padding: 3px 5px 2px; border-radius: 5px; min-width: 18px; text-align: center;
+  background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .1); border-bottom-width: 2px;
+  color: var(--rp-text-2);
+}
+.pp-key em { font-style: normal; color: var(--rp-text-3); opacity: .7; }
+.pp-link {
+  margin: 10px 0 2px; display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; color: var(--rp-text-3); transition: color .15s;
+}
+.pp-link:hover { color: var(--rp-text); }
+
+@keyframes pp-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+@keyframes pp-pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 92, 147, .65); } 100% { box-shadow: 0 0 0 7px rgba(255, 92, 147, 0); } }
+@media (prefers-reduced-motion: reduce) { .pp-hero-art, .pp-chip i { animation: none !important; } }

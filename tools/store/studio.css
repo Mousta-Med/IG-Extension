@@ -1,0 +1,174 @@
+/* ReelPilot store studio — scenes for screenshots and promo tiles. */
+html, body { margin: 0; padding: 0; overflow: hidden; }
+body {
+  width: 1280px; height: 800px; background: #09090d; color: #f6f6f8;
+  font-family: "Segoe UI Variable Display", "SF Pro Display", -apple-system, "Segoe UI", Inter, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body.promo { width: 440px; height: 280px; }
+body.marquee { width: 1400px; height: 560px; }
+#stage { position: relative; width: 100%; height: 100%; overflow: hidden; isolation: isolate; }
+
+/* Backdrop glow */
+.glow { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.glow::before, .glow::after {
+  content: ""; position: absolute; border-radius: 50%; filter: blur(90px); opacity: .55;
+}
+.glow::before { width: 620px; height: 620px; left: -160px; top: -220px; background: radial-gradient(circle, #d62976, transparent 65%); }
+.glow::after { width: 700px; height: 700px; right: -220px; bottom: -320px; background: radial-gradient(circle, #4f5bd5, transparent 65%); }
+.glow.warm::after { background: radial-gradient(circle, #fa7e1e, transparent 65%); opacity: .35; }
+
+/* Copy block */
+.copy { position: absolute; left: 72px; top: 50%; transform: translateY(-50%); width: 440px; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 8px; border-radius: 999px;
+  background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1);
+  font-size: 14px; font-weight: 650; line-height: 1; color: #ffb3cd; letter-spacing: .01em;
+}
+.eyebrow svg { width: 22px; height: 22px; }
+.copy h1 { margin: 22px 0 18px; font-size: 54px; line-height: 1.04; font-weight: 800; letter-spacing: -.035em; }
+.grad {
+  background: linear-gradient(100deg, #feda75, #fa7e1e 25%, #d62976 55%, #962fbf 80%, #6b74ff);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.copy p { margin: 0; font-size: 20px; line-height: 1.5; color: rgba(246, 246, 248, .66); font-weight: 450; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 12px;
+  background: rgba(255, 255, 255, .055); border: 1px solid rgba(255, 255, 255, .09);
+  font-size: 15px; font-weight: 600; color: rgba(246, 246, 248, .85);
+}
+.chip svg { width: 18px; height: 18px; color: #ff7fae; }
+.keys { display: grid; gap: 12px; margin-top: 30px; }
+.key-row { display: flex; align-items: center; gap: 14px; font-size: 16px; color: rgba(246, 246, 248, .75); font-weight: 550; }
+.key-row span { display: inline-flex; gap: 5px; min-width: 130px; }
+kbd {
+  font-family: inherit; font-size: 14px; font-weight: 700; line-height: 1; padding: 7px 9px 6px; min-width: 30px; text-align: center; border-radius: 8px;
+  background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .14); border-bottom-width: 3px;
+  color: #fff;
+}
+
+/* ── Reel frame ─────────────────────────────────────────── */
+.reel {
+  position: absolute; width: 360px; height: 640px; border-radius: 18px; overflow: hidden;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .06);
+}
+.reel-ui { position: absolute; inset: 0; pointer-events: none; }
+.reel-ui::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 45%;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .55));
+}
+.reel-meta { position: absolute; z-index: 1; left: 16px; right: 64px; bottom: 18px; font-size: 14px; line-height: 1.4; }
+.reel-meta .who { display: flex; align-items: center; gap: 9px; font-weight: 700; margin-bottom: 8px; }
+.reel-meta .av { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; background: linear-gradient(135deg, #ffd29d, #e0607e); }
+.reel-meta p { margin: 0 0 8px; color: rgba(255, 255, 255, .92); }
+.reel-meta .tag { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; opacity: .85; }
+.reel-meta .ad { display: inline-block; margin-top: 2px; font-size: 12.5px; font-weight: 700; opacity: .8; }
+.reel-actions { position: absolute; z-index: 1; right: 12px; bottom: 22px; display: grid; gap: 18px; justify-items: center; font-size: 12px; font-weight: 700; }
+.reel-actions div { display: grid; gap: 4px; justify-items: center; }
+.reel-actions svg { width: 28px; height: 28px; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .5)); }
+
+/* ── Scenes (pure CSS artwork) ──────────────────────────── */
+.scene { position: absolute; inset: 0; overflow: hidden; }
+.sunset { background: linear-gradient(180deg, #24104f 0%, #6d2a7c 30%, #d9577c 56%, #ff9e6e 72%, #ffd29d 82%); }
+.sunset .stars { position: absolute; inset: 0 0 50% 0; opacity: .7;
+  background-image: radial-gradient(1.5px 1.5px at 20% 12%, #fff, transparent), radial-gradient(1px 1px at 70% 8%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 85% 22%, #fff, transparent), radial-gradient(1px 1px at 40% 25%, #fff, transparent),
+    radial-gradient(1px 1px at 58% 18%, #fff, transparent), radial-gradient(1.5px 1.5px at 10% 30%, #fff, transparent); }
+.sunset .sun { position: absolute; left: 50%; top: 50%; width: 190px; height: 190px; margin-left: -95px; border-radius: 50%;
+  background: radial-gradient(circle, #fff7dd 0%, #ffd27a 38%, rgba(255, 170, 90, .35) 60%, transparent 72%); }
+.sunset .d1 { position: absolute; left: -30%; right: -20%; bottom: -12%; height: 40%; border-radius: 55% 45% 0 0 / 38% 30% 0 0;
+  background: linear-gradient(180deg, #7a2a5e, #2b0f30 70%); }
+.sunset .d2 { position: absolute; left: 25%; right: -50%; bottom: -18%; height: 34%; border-radius: 50% 50% 0 0 / 45% 40% 0 0;
+  background: linear-gradient(180deg, #4a1647, #17081b 70%); }
+.sunset .d3 { position: absolute; left: -50%; right: 30%; bottom: -22%; height: 28%; border-radius: 50% 50% 0 0 / 50% 40% 0 0;
+  background: linear-gradient(180deg, #2a0c2c, #0c040e 70%); }
+
+.aurora { background: linear-gradient(180deg, #030b17 0%, #072238 45%, #0b3346 68%, #04141e 100%); }
+.aurora .band { position: absolute; border-radius: 50%; filter: blur(28px); mix-blend-mode: screen; }
+.aurora .b1 { width: 140%; height: 34%; left: -20%; top: 8%; background: radial-gradient(closest-side, rgba(70, 255, 190, .75), transparent); transform: rotate(-12deg); }
+.aurora .b2 { width: 120%; height: 26%; left: -10%; top: 22%; background: radial-gradient(closest-side, rgba(140, 90, 255, .6), transparent); transform: rotate(8deg); }
+.aurora .b3 { width: 90%; height: 20%; left: 20%; top: 4%; background: radial-gradient(closest-side, rgba(60, 200, 255, .55), transparent); transform: rotate(-4deg); }
+.aurora .mtn { position: absolute; left: 0; right: 0; bottom: 30%; height: 30%; background: #06121c;
+  clip-path: polygon(0 100%, 0 60%, 12% 35%, 22% 55%, 36% 15%, 50% 50%, 62% 30%, 76% 58%, 88% 25%, 100% 50%, 100% 100%); }
+.aurora .lake { position: absolute; left: 0; right: 0; bottom: 0; height: 30%;
+  background: linear-gradient(180deg, #0b2b3a, #04121b); }
+.aurora .lake::before { content: ""; position: absolute; inset: 0; opacity: .35;
+  background: repeating-linear-gradient(180deg, transparent 0 7px, rgba(120, 255, 210, .25) 7px 8px); }
+
+.city { background: linear-gradient(180deg, #0f0a2a 0%, #33185a 48%, #b8407a 78%, #ff7f8f 100%); }
+.city .moon { position: absolute; right: 18%; top: 12%; width: 70px; height: 70px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff, #ffe4f0 60%, #f7b6d2); box-shadow: 0 0 60px rgba(255, 190, 220, .6); }
+.city .bld { position: absolute; bottom: 0; background-color: #120a24;
+  background-image: repeating-linear-gradient(180deg, transparent 0 10px, rgba(255, 210, 120, .5) 10px 13px),
+    repeating-linear-gradient(90deg, #120a24 0 6px, transparent 6px 12px); background-blend-mode: normal; }
+.city .bld::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18, 10, 36, .1), #120a24 92%); }
+
+.ocean { background: linear-gradient(180deg, #0b1d42 0%, #24508f 34%, #f2967a 60%, #ffd3a5 64.5%, #164a6e 65%, #0a2c47 100%); }
+.ocean .sun { position: absolute; left: 50%; top: 52%; width: 130px; height: 130px; margin-left: -65px; border-radius: 50%;
+  background: radial-gradient(circle, #fff6df 0%, #ffc58a 50%, transparent 72%); }
+.ocean .shine { position: absolute; left: 34%; right: 34%; top: 65.5%; bottom: 6%;
+  background: repeating-linear-gradient(180deg, rgba(255, 214, 170, .7) 0 3px, transparent 3px 12px);
+  -webkit-mask-image: linear-gradient(180deg, #000, transparent); mask-image: linear-gradient(180deg, #000, transparent); }
+
+.product { background: radial-gradient(120% 80% at 50% 30%, #fff1e6, #ffc8a8 55%, #ff8f87); }
+.product .disc { position: absolute; left: 50%; top: 40%; width: 230px; height: 230px; margin: -115px 0 0 -115px; border-radius: 50%;
+  background: conic-gradient(from 210deg, #ff5f6d, #ffc371, #ff5f6d); box-shadow: 0 30px 60px -20px rgba(150, 40, 40, .55); }
+.product .disc::after { content: ""; position: absolute; inset: 38%; border-radius: 50%; background: #fff1e6; }
+.product .sale { position: absolute; left: 0; right: 0; top: 66%; text-align: center; font-size: 46px; font-weight: 900; line-height: 1; color: #5a1530; letter-spacing: -.03em; }
+.product .sale small { display: block; font-size: 16px; font-weight: 700; letter-spacing: .25em; margin-top: 8px; opacity: .7; }
+
+/* ── Mock browser (other site) ─────────────────────────── */
+.browser {
+  position: absolute; border-radius: 14px; overflow: hidden; background: #1b1b22;
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .07);
+}
+.tabs { height: 38px; display: flex; align-items: flex-end; gap: 4px; padding: 0 12px; background: #121218; }
+.tab { height: 30px; padding: 0 14px; display: flex; align-items: center; gap: 8px; border-radius: 10px 10px 0 0; font-size: 12.5px; color: rgba(255, 255, 255, .55); }
+.tab.on { background: #1b1b22; color: #fff; }
+.tab i { width: 14px; height: 14px; border-radius: 4px; background: #5b8def; }
+.tab.reels i { background: linear-gradient(135deg, #fa7e1e, #d62976, #962fbf); }
+.tab .snd { width: 12px; height: 12px; color: #fff; opacity: .8; }
+.bar { height: 44px; display: flex; align-items: center; gap: 12px; padding: 0 14px; border-bottom: 1px solid rgba(255, 255, 255, .06); }
+.url { flex: 1; height: 30px; border-radius: 999px; background: #121218; display: flex; align-items: center; padding: 0 14px; font-size: 13px; color: rgba(255, 255, 255, .6); }
+.ext { position: relative; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; }
+.ext.active { background: rgba(255, 255, 255, .1); }
+.ext svg { width: 20px; height: 20px; }
+.badge { position: absolute; right: -4px; bottom: -2px; min-width: 18px; height: 16px; padding: 0 4px; border-radius: 6px; background: #e1306c; color: #fff; font-size: 10px; font-weight: 800; line-height: 16px; text-align: center; }
+.doc { padding: 34px 48px; }
+.doc .h { height: 22px; width: 46%; border-radius: 6px; background: rgba(255, 255, 255, .16); margin-bottom: 22px; }
+.doc .l { height: 11px; border-radius: 5px; background: rgba(255, 255, 255, .08); margin-bottom: 13px; }
+.doc .chart { height: 150px; margin: 26px 0; border-radius: 12px; background: rgba(255, 255, 255, .04); display: flex; align-items: flex-end; gap: 14px; padding: 18px; }
+.doc .chart b { flex: 1; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #6b8cff, #3c55c9); }
+
+/* ── PiP window ────────────────────────────────────────── */
+.pip {
+  position: absolute; width: 250px; height: 444px; border-radius: 14px; overflow: hidden;
+  box-shadow: 0 30px 80px -10px rgba(0, 0, 0, .95), 0 0 0 1px rgba(255, 255, 255, .14);
+}
+.pip-top { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; z-index: 2; }
+.pip-top span, .pip-ctrl span { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, .45); }
+.pip-top svg { width: 16px; height: 16px; }
+.pip-ctrl { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); display: flex; justify-content: center; gap: 22px; z-index: 2; }
+.pip-ctrl span { width: 46px; height: 46px; }
+.pip-ctrl span.big { width: 58px; height: 58px; background: rgba(0, 0, 0, .55); }
+.pip-ctrl svg { width: 22px; height: 22px; }
+.pip-progress { position: absolute; left: 12px; right: 12px; bottom: 12px; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, .25); z-index: 2; }
+.pip-progress b { display: block; width: 58%; height: 100%; border-radius: 4px; background: #fff; }
+.callout {
+  position: absolute; display: flex; align-items: center; gap: 10px; padding: 10px 16px 10px 10px; border-radius: 999px;
+  background: rgba(20, 20, 26, .94); border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 16px 40px -10px rgba(0, 0, 0, .8);
+  font-size: 15px; font-weight: 650; white-space: nowrap;
+}
+.callout .ico { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(120deg, #fa7e1e, #d62976 55%, #962fbf); }
+.callout svg { width: 16px; height: 16px; }
+
+.popup-frame { position: absolute; width: 360px; border: 0; border-radius: 12px; background: #0b0b0f;
+  box-shadow: 0 30px 80px -10px rgba(0, 0, 0, .95), 0 0 0 1px rgba(255, 255, 255, .12); }
+
+/* ── Promo tiles ───────────────────────────────────────── */
+.brand-lockup { position: absolute; display: flex; align-items: center; gap: 18px; }
+.brand-lockup .logo { filter: drop-shadow(0 14px 30px rgba(214, 41, 118, .55)); }
+.brand-lockup .logo svg { width: 100%; height: 100%; display: block; }
+.brand-lockup .name { font-weight: 850; letter-spacing: -.035em; line-height: 1; }
+.brand-lockup .tag { color: rgba(246, 246, 248, .7); font-weight: 550; margin-top: 8px; }
