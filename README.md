@@ -4,9 +4,18 @@ A Chrome extension that scrolls to the next Instagram reel automatically, puts p
 top of the reels, and **keeps running when you switch to another tab**, including in
 Picture-in-Picture.
 
-![ReelPilot panel next to a reel](store/assets/screenshot-1-autopilot.png)
+**[Get it on the Chrome Web Store](https://chromewebstore.google.com/detail/bphneemeaeekncgbmhfjjhfbplhplced)** ·
+**[Watch the 46-second demo](https://www.youtube.com/watch?v=Ak9mns1-8Ho)**
 
-## Install (2 minutes)
+[![ReelPilot demo video](store/video/youtube-thumbnail.png)](https://www.youtube.com/watch?v=Ak9mns1-8Ho)
+
+## Install
+
+**From the Chrome Web Store:** open the
+[ReelPilot store page](https://chromewebstore.google.com/detail/bphneemeaeekncgbmhfjjhfbplhplced) and
+click **Add to Chrome**. The page goes live once Google approves the listing.
+
+**From this repository (developer mode):**
 
 1. Get the code: **Code → Download ZIP** on GitHub and unzip it, or
    `git clone https://github.com/Mousta-Med/IG-Extension.git`.
@@ -122,7 +131,8 @@ Everything for the store is ready. Follow **[store/LISTING.md](store/LISTING.md)
 - `python tools/build_zip.py` builds the upload package, `dist/reelpilot-<version>.zip`.
 - `store/assets/` holds the screenshots, promo tiles and store icon. To regenerate them after UI
   changes, run `cd tools/store && npm install && npm run render`.
-- `store/privacy-policy.html` is the privacy policy. Host it at a public URL before submitting.
+- [PRIVACY.md](PRIVACY.md) is the privacy policy the store links to. `store/privacy-policy.html` is the
+  same text as a standalone page, if you prefer to host it elsewhere.
 - `store/video/` holds the 46-second promo video and its YouTube thumbnail. **[store/YOUTUBE.md](store/YOUTUBE.md)**
   has the title, description and settings for uploading it. To re-render, run
   `cd tools/store && npm install && node ../video/render.mjs`.
@@ -162,7 +172,7 @@ store/                        Store listing text, privacy policy and graphics
 
 ReelPilot stores your settings locally in Chrome. It sends no data anywhere and doesn't touch your
 Instagram account. It only controls the videos already on the page. Full policy:
-[store/privacy-policy.html](store/privacy-policy.html).
+[PRIVACY.md](PRIVACY.md).
 
 ---
 

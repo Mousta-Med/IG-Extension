@@ -32,7 +32,8 @@ ReelPilot puts Instagram Reels on autopilot. It's a free Chrome extension that m
 ✦ Skips sponsored reels and image ads (optional)
 ✦ No account, no tracking: everything stays in your browser
 
-Get it on the Chrome Web Store: [paste your store link here]
+Get it on the Chrome Web Store: https://chromewebstore.google.com/detail/bphneemeaeekncgbmhfjjhfbplhplced
+Source code: https://github.com/Mousta-Med/IG-Extension
 
 Keyboard shortcuts
 Alt+Shift+S  Auto-scroll on/off
@@ -63,8 +64,9 @@ Music: original soundtrack made for this video.
 
 ## 3. Add it to the Chrome Web Store listing
 
-1. Copy the video link from YouTube Studio, e.g. `https://www.youtube.com/watch?v=XXXXXXXXXXX`.
-2. Developer Dashboard → your item → **Store listing** → **Global promo video** → paste the link.
+1. The video is live at https://www.youtube.com/watch?v=Ak9mns1-8Ho.
+2. Developer Dashboard → your item → **Store listing** → **Global promo video** → paste
+   `https://www.youtube.com/watch?v=Ak9mns1-8Ho`.
 3. Save. If the item is already published, submit it for review again.
 
 The video then plays at the top of your Chrome Web Store page, before the screenshots.

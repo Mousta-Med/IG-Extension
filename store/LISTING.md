@@ -5,7 +5,8 @@ Everything to fill in, in the order the Developer Dashboard asks for it. Copy th
 **Files**
 - Package: `dist/reelpilot-1.0.0.zip` (rebuild with `python tools/build_zip.py`)
 - Graphics: `store/assets/` (re-render with `cd tools/store && npm install && npm run render`)
-- Privacy policy: `store/privacy-policy.html` (needs a public URL, see step 5)
+- Item ID: `bphneemeaeekncgbmhfjjhfbplhplced`, store page https://chromewebstore.google.com/detail/bphneemeaeekncgbmhfjjhfbplhplced (live after approval)
+- Privacy policy: https://github.com/Mousta-Med/IG-Extension/blob/main/PRIVACY.md
 
 ---
 
@@ -71,8 +72,9 @@ ReelPilot is an independent project and is not affiliated with, endorsed by or s
 | Screenshots (1280×800, in this order) | `screenshot-1-autopilot.png`, `screenshot-2-on-reel-controls.png`, `screenshot-3-background-pip.png`, `screenshot-4-remote-control.png`, `screenshot-5-skip-ads.png` |
 | Small promo tile (440×280) | `store/assets/promo-small-440x280.png` |
 | Marquee promo tile (1400×560) | `store/assets/promo-marquee-1400x560.png` (optional) |
-| Global promo video | YouTube link to `store/video/reelpilot-promo.mp4`; see [YOUTUBE.md](YOUTUBE.md) (optional) |
-| Official URL / Homepage / Support | Leave empty, or add your privacy-policy page / a support email page later |
+| Global promo video | `https://www.youtube.com/watch?v=Ak9mns1-8Ho` |
+| Homepage URL | `https://github.com/Mousta-Med/IG-Extension` |
+| Support URL | `https://github.com/Mousta-Med/IG-Extension/issues` |
 
 ## 4. Privacy practices tab
 
@@ -108,15 +110,13 @@ The extension's only function is controlling Reels playback on instagram.com. Ho
 - Check all three certifications (no selling/transferring data, no use unrelated to the single purpose, no
   creditworthiness/lending use).
 
-**Privacy policy URL** → the public link from step 5.
+**Privacy policy URL** → `https://github.com/Mousta-Med/IG-Extension/blob/main/PRIVACY.md`
 
-## 5. Host the privacy policy
+## 5. Privacy policy
 
-The store needs a public link to `store/privacy-policy.html`. First replace `[your contact email]` in it with
-the contact email you want to show. Then pick one way to host it:
-- **Google Docs:** paste the policy into a Doc, then **File → Share → Publish to the web**, and use that link.
-- **GitHub Pages:** put the file in a public repo and enable Pages.
-- **Google Sites:** create a one-page site and paste the text.
+Already hosted. GitHub shows [PRIVACY.md](../PRIVACY.md) as a readable page at https://github.com/Mousta-Med/IG-Extension/blob/main/PRIVACY.md.
+Paste that link in the Privacy tab. If you edit the policy, update both `PRIVACY.md` and
+`store/privacy-policy.html`.
 
 ## 6. Distribution tab
 
