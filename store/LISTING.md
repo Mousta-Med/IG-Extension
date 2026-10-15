@@ -5,7 +5,7 @@ Everything to fill in, in the order the Developer Dashboard asks for it. Copy th
 **Files**
 - Package: `dist/reelpilot-1.0.0.zip` (rebuild with `python tools/build_zip.py`)
 - Graphics: `store/assets/` (re-render with `cd tools/store && npm install && npm run render`)
-- Item ID: `bphneemeaeekncgbmhfjjhfbplhplced`, store page https://chromewebstore.google.com/detail/bphneemeaeekncgbmhfjjhfbplhplced (live after approval)
+- Item ID: `bphneemeaeekncgbmhfjjhfbplhplced`, published at https://chromewebstore.google.com/detail/reelpilot-%E2%80%93-auto-scroll-f/bphneemeaeekncgbmhfjjhfbplhplced
 - Privacy policy: https://github.com/Mousta-Med/IG-Extension/blob/main/PRIVACY.md
 
 ---

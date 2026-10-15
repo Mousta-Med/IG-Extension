@@ -1,10 +1,12 @@
 # ReelPilot – Auto Scroll for Instagram Reels
 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/bphneemeaeekncgbmhfjjhfbplhplced?label=Chrome%20Web%20Store&logo=googlechrome&logoColor=white&color=E1306C)](https://chromewebstore.google.com/detail/reelpilot-%E2%80%93-auto-scroll-f/bphneemeaeekncgbmhfjjhfbplhplced)
+
 A Chrome extension that scrolls to the next Instagram reel automatically, puts playback controls on
 top of the reels, and **keeps running when you switch to another tab**, including in
 Picture-in-Picture.
 
-**[Get it on the Chrome Web Store](https://chromewebstore.google.com/detail/bphneemeaeekncgbmhfjjhfbplhplced)** ·
+**[Get it on the Chrome Web Store](https://chromewebstore.google.com/detail/reelpilot-%E2%80%93-auto-scroll-f/bphneemeaeekncgbmhfjjhfbplhplced)** ·
 **[Watch the 46-second demo](https://www.youtube.com/watch?v=Ak9mns1-8Ho)**
 
 [![ReelPilot demo video](store/video/youtube-thumbnail.png)](https://www.youtube.com/watch?v=Ak9mns1-8Ho)
@@ -12,8 +14,8 @@ Picture-in-Picture.
 ## Install
 
 **From the Chrome Web Store:** open the
-[ReelPilot store page](https://chromewebstore.google.com/detail/bphneemeaeekncgbmhfjjhfbplhplced) and
-click **Add to Chrome**. The page goes live once Google approves the listing.
+[ReelPilot store page](https://chromewebstore.google.com/detail/reelpilot-%E2%80%93-auto-scroll-f/bphneemeaeekncgbmhfjjhfbplhplced) and
+click **Add to Chrome**.
 
 **From this repository (developer mode):**
 

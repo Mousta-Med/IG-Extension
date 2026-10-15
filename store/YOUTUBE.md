@@ -32,7 +32,7 @@ ReelPilot puts Instagram Reels on autopilot. It's a free Chrome extension that m
 ✦ Skips sponsored reels and image ads (optional)
 ✦ No account, no tracking: everything stays in your browser
 
-Get it on the Chrome Web Store: https://chromewebstore.google.com/detail/bphneemeaeekncgbmhfjjhfbplhplced
+Get it on the Chrome Web Store: https://chromewebstore.google.com/detail/reelpilot-%E2%80%93-auto-scroll-f/bphneemeaeekncgbmhfjjhfbplhplced
 Source code: https://github.com/Mousta-Med/IG-Extension
 
 Keyboard shortcuts
