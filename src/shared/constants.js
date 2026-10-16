@@ -72,8 +72,17 @@
   };
   RP.shortcutKeys = (combo) => String(combo || '').split('+').filter(Boolean).map((k) => KEY_LABELS[k.trim()] || k.trim());
 
-  // /reels/, /reels/<code>/, /reel/<code>/
-  RP.isReelsPath = (path) => /^\/reels?(\/|$)/.test(path || '');
+  // /reels/, /reels/<code>/ — the Reels tab's endless feed.
+  RP.isReelsTab = (path) => /^\/reels(\/|$)/.test(path || '');
+  // /reel/<code>/ or /<user>/reel/<code>/ — a single reel (in a profile's popup, or on its own page).
+  RP.isSingleReelPath = (path) => /^\/(?:[A-Za-z0-9._]+\/)?reel\/[A-Za-z0-9_-]{5,}/.test(path || '');
+  // Any single post: /p/, /reel/ or /tv/ <code>, optionally under /<user>/.
+  RP.isPostPath = (path) => /^\/(?:[A-Za-z0-9._]+\/)?(?:p|reel|tv)\/[A-Za-z0-9_-]{5,}/.test(path || '');
+  RP.isReelsPath = (path) => RP.isReelsTab(path) || RP.isSingleReelPath(path);
+  RP.postCode = (path) => {
+    const m = String(path || '').match(/\/(?:p|reels?|tv)\/([A-Za-z0-9_-]{5,})/);
+    return m ? m[1] : '';
+  };
 
   /** The popup Instagram shows a post in (opened from a profile, Explore…), if one is open. */
   RP.postDialog = () => {

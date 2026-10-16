@@ -138,19 +138,33 @@
   }
 
   // ── SPA route tracking ──
+  // 'feed'  → the Reels tab (and a reel's own page): scroll the feed.
+  // 'popup' → a reel opened in Instagram's post popup, e.g. from a profile: drive the popup's ‹ › arrows.
+  //           It stays in charge while you move through that popup, photo posts included.
+  function contextFor(path) {
+    if (RP.isReelsTab(path)) return 'feed';
+    if (RP.isPostPath(path) && RP.postDialog()) {
+      return RP.isSingleReelPath(path) || (engine.enabled && engine.popup) ? 'popup' : null;
+    }
+    return RP.isSingleReelPath(path) ? 'feed' : null;
+  }
+
   let lastPath = null;
+  let lastContext;
   function checkRoute() {
     if (!alive) return;
     overlay.ensureAttached();
     if (music) music.ensureAttached();
     const path = location.pathname;
-    if (path === lastPath) return;
+    const context = contextFor(path);
+    if (path === lastPath && context === lastContext) return;
+    const pathChanged = path !== lastPath;
     lastPath = path;
-    const onReels = RP.isReelsPath(path);
-    engine.setEnabled(onReels);
-    if (music) music.setEnabled(!onReels);
+    lastContext = context;
+    engine.setEnabled(!!context, context || 'feed');
+    if (music) music.setEnabled(context !== 'feed');
     refreshVisibility();
-    if (onReels) maybeAutostart();
+    if (context === 'feed' && pathChanged) maybeAutostart();
   }
   const routeTimer = setInterval(checkRoute, 600);
   window.addEventListener('popstate', checkRoute);

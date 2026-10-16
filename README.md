@@ -70,6 +70,19 @@ tabs, where Chrome supports it.
 Image reels and image ads can't go into Picture-in-Picture (it only plays video). The window keeps
 showing the last video until the next video reel arrives.
 
+### Reels opened from a profile
+
+Open a reel from someone's profile (or Explore) and Instagram shows it in a popup with ‹ › arrows to
+the profile's other posts. ReelPilot recognises that this isn't the Reels tab and switches to
+**profile mode**:
+
+- **Next / previous** (the panel buttons, shortcuts and media keys) press the popup's own ‹ › arrows.
+- **Auto-scroll** plays through the profile post by post. Reels advance after your plays or timer, as
+  usual. Photo posts stay up for 5 seconds (or your **Timer**) and play their song if they have one.
+- At the profile's last post you get *No next post here* instead of the Reels-tab messages.
+- Closing the popup puts the panel away. Opening a photo post on its own doesn't bring up the panel;
+  it appears once you're on a reel.
+
 ### Image reels and ads
 
 Some reels, including many ads, are still images. ReelPilot shows them for 5 seconds (or for your
@@ -130,8 +143,8 @@ You can turn background playback off in **Options → Keep playing in background
 
 ## Troubleshooting
 
-- **No panel:** make sure the URL is `instagram.com/reels/…`. The panel only appears on Reels.
-  Refresh the tab once after installing or updating the extension.
+- **No panel:** the panel appears on the Reels tab (`instagram.com/reels/…`) and on a reel opened in
+  a popup, e.g. from a profile. Refresh the tab once after installing or updating the extension.
 - **Sound is muted after switching tabs:** Chrome only allows sound after you've clicked the page
   once. Click anywhere on the reels page, then unmute.
 - **"No more reels loaded yet":** Instagram hasn't loaded the next reel yet (slow connection, or the
@@ -179,7 +192,8 @@ The helper tools have their own requirements:
 manifest.json                 Manifest V3
 src/page/page-hooks.js        Runs inside the page: visibility, IntersectionObserver and rAF hooks
 src/page/page-music.js        Runs inside the page: finds the song of each photo post in Instagram's data
-src/content/engine.js         Playback engine: finds the current reel (video or image), counts plays, advances, PiP
+src/content/engine.js         Playback engine: finds the current reel (video or image), counts plays, advances
+                              (Reels-tab feed or a profile's post popup), PiP
 src/content/overlay.js        On-page controls: floating panel or bar on the reel (Shadow DOM)
 src/content/post-music.js     Music on photo posts: picks the post on screen, plays its song, shows the pill
 src/content/main.js           Wiring: settings, page navigation, messages, lifecycle

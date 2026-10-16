@@ -561,11 +561,13 @@
       if (this.root.style.display === 'none') return;
       this.controls.update(s, this.settings);
 
+      const profile = s.mode === 'popup';
+      const autoText = profile ? 'Auto-playing posts' : 'Auto-scrolling';
       let tone = 'idle';
-      let text = 'Looking for reels…';
+      let text = profile ? 'Looking for the post…' : 'Looking for reels…';
       if (s.hasVideo) {
-        if (s.auto && (s.playing || s.busy)) { tone = 'live'; text = s.hidden ? 'Auto-scrolling in background' : 'Auto-scrolling'; }
-        else if (s.auto) text = 'Auto-scroll · paused';
+        if (s.auto && (s.playing || s.busy)) { tone = 'live'; text = s.hidden ? `${autoText} in background` : autoText; }
+        else if (s.auto) text = profile ? 'Auto-play · paused' : 'Auto-scroll · paused';
         else if (s.playing) { tone = 'play'; text = 'Playing'; }
         else text = 'Paused';
       }
@@ -573,7 +575,8 @@
       if (this.refs.statusText.textContent !== text) this.refs.statusText.textContent = text;
 
       const n = s.reelNumber || 0;
-      RP.setHTML(this.refs.stats, `<b>${n}</b> reel${n === 1 ? '' : 's'} · <b>${RP.formatSpan(s.watchSec || 0)}</b> watched`);
+      const unit = profile ? 'post' : 'reel';
+      RP.setHTML(this.refs.stats, `<b>${n}</b> ${unit}${n === 1 ? '' : 's'} · <b>${RP.formatSpan(s.watchSec || 0)}</b> watched`);
     }
 
     renderHud(s) {

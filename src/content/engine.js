@@ -41,13 +41,13 @@
   };
   const visibleRatio = (el) => visibleRatioOf(el.getBoundingClientRect());
 
-  /** The reel that is on screen right now (playing + most visible wins). */
-  function findCurrentVideo(prefer = null, exclude = null) {
+  /** The reel that is on screen right now (playing + most visible wins), optionally inside `root`. */
+  function findCurrentVideo(prefer = null, exclude = null, root = document) {
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     let best = null;
     let bestScore = 0;
-    for (const v of document.querySelectorAll('video')) {
+    for (const v of root.querySelectorAll('video')) {
       if (v === exclude || !v.isConnected) continue;
       const r = v.getBoundingClientRect();
       if (!sizeOk(r)) continue;
@@ -217,6 +217,86 @@
     return { author: name ? `@${name}` : '', sponsored: hasSponsoredLabel(item) };
   }
 
+  // ── Post popup (a reel or post opened from a profile) ───────
+  // Instagram labels its ‹ › post arrows like this (in the page's language). A carousel's own chevrons
+  // use the same labels but sit on the photo, so an arrow must lie outside the post's media.
+  const NEXT_LABELS = new Set(['next', 'suivant', 'siguiente', 'avanti', 'weiter', 'próximo', 'التالي', 'sonraki', 'volgende', 'dalej', 'далее']);
+  const PREV_LABELS = new Set(['go back', 'previous', 'précédent', 'retour', 'atrás', 'anterior', 'indietro', 'zurück', 'voltar', 'السابق', 'رجوع', 'geri', 'terug', 'wstecz', 'назад']);
+
+  const rectsOverlap = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
+  /** Is `el` what you'd actually click at its centre? (Not something behind the popup's backdrop.) */
+  function onTop(el) {
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + r.height / 2;
+    if (x < 0 || y < 0 || x >= window.innerWidth || y >= window.innerHeight) return false;
+    for (const hit of document.elementsFromPoint(x, y)) {
+      if (hit.id === 'reelpilot-overlay' || hit.id === 'reelpilot-music') continue; // our own UI may float above
+      if (hit === document.body || hit === document.documentElement) return false;
+      return el === hit || el.contains(hit) || hit.contains(el);
+    }
+    return false;
+  }
+
+  /** The post's card in the popup: the smallest box holding both its media and its author link. */
+  function postCard(root, media) {
+    const m = media.getBoundingClientRect();
+    let author = null;
+    for (const a of root.querySelectorAll('a[href]')) {
+      if (!profileFromHref(a.getAttribute('href'))) continue;
+      if (rectsOverlap(a.getBoundingClientRect(), m)) continue; // a tag on the photo, not the header
+      author = a;
+      break;
+    }
+    if (!author) return root;
+    let el = media.parentElement;
+    while (el && el !== root && !el.contains(author)) el = el.parentElement;
+    return el || root;
+  }
+
+  /** Instagram's "next / previous post" arrow beside the popup, or null when there is none. */
+  function popupArrow(root, dir) {
+    const media = largest(root, 'video, img', 150);
+    if (!media) return null;
+    const m = media.getBoundingClientRect();
+    const card = postCard(root, media);
+    const vh = window.innerHeight;
+    const centered = (r) => { const cy = r.top + r.height / 2; return cy > vh * 0.25 && cy < vh * 0.75; };
+    const outside = (r) => (dir > 0 ? r.left >= m.right - 2 : r.right <= m.left + 2);
+    const labels = dir > 0 ? NEXT_LABELS : PREV_LABELS;
+
+    for (const el of document.querySelectorAll('[aria-label]')) {
+      if (!labels.has((el.getAttribute('aria-label') || '').trim().toLowerCase())) continue;
+      const btn = el.closest('button, [role="button"], a') || el;
+      const r = btn.getBoundingClientRect();
+      if (!r.width || !centered(r) || !outside(r) || (card !== root && card.contains(btn))) continue;
+      if (onTop(btn)) return btn;
+    }
+    // Unlabelled: the small icon button right beside the card (never one inside it, like a comment's ♥).
+    if (card === root) return null;
+    const c = card.getBoundingClientRect();
+    let best = null;
+    for (const btn of document.querySelectorAll('button, [role="button"]')) {
+      if (card.contains(btn) || (btn.textContent || '').trim().length > 2) continue;
+      const r = btn.getBoundingClientRect();
+      if (r.width < 16 || r.width > 72 || r.height < 16 || r.height > 72 || !centered(r)) continue;
+      const gap = dir > 0 ? r.left - c.right : c.left - r.right;
+      if (gap < -2 || gap > 200 || !onTop(btn)) continue;
+      if (!best || gap < best.gap) best = { btn, gap };
+    }
+    return best ? best.btn : null;
+  }
+
+  /** Last resort: the popup also moves between posts with the ← → keys. */
+  function pressArrowKey(root, dir) {
+    const key = dir > 0 ? 'ArrowRight' : 'ArrowLeft';
+    const code = dir > 0 ? 39 : 37;
+    const init = { key, code: key, keyCode: code, which: code, bubbles: true, cancelable: true, view: window };
+    root.dispatchEvent(new KeyboardEvent('keydown', init));
+    root.dispatchEvent(new KeyboardEvent('keyup', init));
+  }
+
   const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
   const once = (target, type, timeout) => new Promise((resolve) => {
@@ -245,6 +325,8 @@
       this.handlers = new Map();
 
       this.enabled = false;
+      this.mode = 'feed';        // 'feed' → the Reels tab · 'popup' → a post popup (e.g. a profile's reels)
+      this.postCode = '';        // popup: the post on screen, from the URL
       this.auto = false;
       this.video = null;         // current reel's <video> (null for image reels / image ads)
       this.item = null;          // current reel's feed slot
@@ -315,19 +397,32 @@
       this.emit('change');
     }
 
-    setEnabled(on) {
+    /** `mode`: 'feed' for the Reels tab, 'popup' for a post popup driven by Instagram's ‹ › arrows. */
+    setEnabled(on, mode = 'feed') {
       on = !!on;
-      if (on === this.enabled) return;
+      if (on === this.enabled && (!on || mode === this.mode)) return;
+      const switching = on && this.enabled;
       this.enabled = on;
-      if (!on) {
-        this.auto = false;
+      this.mode = mode;
+      if (!on) this.auto = false;
+      if (!on || switching) {
         this.detachVideo();
         this.item = null;
-      } else {
-        this.scan();
+        this.feed = null;
+        this.postCode = '';
       }
+      if (on) this.scan();
       this.updateMediaSession();
       this.emit('change');
+    }
+
+    get popup() { return this.mode === 'popup'; }
+
+    /** The current reel's video: in the post popup only, on the Reels tab anywhere on screen. */
+    currentVideo(prefer = null, exclude = null) {
+      if (!this.popup) return findCurrentVideo(prefer, exclude);
+      const root = RP.postDialog();
+      return root ? findCurrentVideo(prefer, exclude, root) : null;
     }
 
     setAuto(on) {
@@ -339,7 +434,7 @@
         this.playedSec = 0;
         this.retryAt = 0;
         const onImage = !this.video && this.item && this.item.isConnected;
-        const v = this.video || (onImage ? null : findCurrentVideo());
+        const v = this.video || (onImage ? null : this.currentVideo());
         if (v && v !== this.video) this.attach(v);
         if (v) {
           this.lastTime = v.currentTime;
@@ -364,7 +459,7 @@
         this.emit('change');
         return;
       }
-      const v = (this.video && this.video.isConnected && this.video) || findCurrentVideo();
+      const v = (this.video && this.video.isConnected && this.video) || this.currentVideo();
       if (!v) { this.toast('No reel on screen', 'warn', 'alert'); return; }
       if (v !== this.video) this.attach(v);
       if (v.paused || v.ended) {
@@ -388,7 +483,7 @@
         this.emit('change');
         return { ok: true };
       }
-      const v = (this.video && this.video.isConnected && this.video) || findCurrentVideo();
+      const v = (this.video && this.video.isConnected && this.video) || this.currentVideo();
       if (!v) {
         this.toast(this.item ? 'Picture-in-Picture works on video reels, not images' : 'No reel on screen', 'warn', 'alert');
         return { ok: false, error: 'novideo' };
@@ -469,6 +564,7 @@
       }
       return {
         enabled: this.enabled,
+        mode: this.mode,
         hasVideo: !!v || image,   // "a reel is on screen" (video or image)
         kind: v ? 'video' : image ? 'image' : null,
         auto: this.auto,
@@ -517,6 +613,7 @@
         if (reason === 'manual' || reason === 'media') this.pendingDir = dir;
         return false;
       }
+      if (this.popup) return this.goPopup(dir, reason);
       const from = (this.video && this.video.isConnected && this.video)
         || (this.item && this.item.isConnected && this.item)
         || findCurrentVideo() || findVisibleSlot(this.feed);
@@ -562,15 +659,82 @@
         console.error('[ReelPilot] advance failed', err);
         return false;
       } finally {
-        this.busy = false;
-        this.emit('change');
-        // Labels are read while busy, when skipping is suppressed — act on them now.
-        if (this.meta.sponsored) this.refreshMeta();
-        if (this.pendingDir) {
-          const next = this.pendingDir;
-          this.pendingDir = 0;
-          setTimeout(() => this.go(next, 'manual'), 0);
+        this.finishGo();
+      }
+    }
+
+    finishGo() {
+      this.busy = false;
+      this.emit('change');
+      // Labels are read while busy, when skipping is suppressed — act on them now.
+      if (this.meta.sponsored) this.refreshMeta();
+      if (this.pendingDir) {
+        const next = this.pendingDir;
+        this.pendingDir = 0;
+        setTimeout(() => this.go(next, 'manual'), 0);
+      }
+    }
+
+    /** Post popup: press Instagram's own ‹ › arrow and pick up the post it opens. */
+    async goPopup(dir, reason) {
+      const root = RP.postDialog();
+      if (!root) { this.toast('No post open', 'warn', 'alert'); return false; }
+      const from = this.video && this.video.isConnected ? this.video : null;
+      const fromSrc = from ? from.currentSrc : '';
+      const before = location.pathname;
+      const hidden = document.hidden;
+      this.busy = true;
+      this.lastDir = dir;
+      this.wantPaused = false;
+      this.keepPlaying = true;
+      this.emit('change');
+
+      try {
+        const arrow = popupArrow(root, dir);
+        if (arrow) arrow.click();
+        else pressArrowKey(root, dir);
+        const deadline = Date.now() + (hidden ? 7000 : 3000);
+        while (location.pathname === before && Date.now() < deadline) {
+          await this.sleep(hidden ? 300 : 100);
+          if (this.destroyed) return false;
         }
+        if (location.pathname === before) {
+          this.toast(dir > 0 ? 'No next post here' : 'Already at the first post', 'warn', 'alert');
+          return false;
+        }
+
+        // The new post: wait for its video (the old one may linger for a moment), else it's a photo.
+        this.postCode = RP.postCode(location.pathname);
+        this.detachVideo();
+        this.item = null;
+        let target = null;
+        const until = Date.now() + (hidden ? 2500 : 1200);
+        while (!target && Date.now() < until) {
+          const r = RP.postDialog();
+          const v = r ? findCurrentVideo(null, null, r) : null;
+          if (v && (v !== from || v.currentSrc !== fromSrc)) target = v;
+          else await this.sleep(hidden ? 250 : 100);
+          if (this.destroyed) return false;
+        }
+        if (target) {
+          const audio = from ? { volume: from.volume, muted: from.muted } : this.lastAudio;
+          if (hidden && audio && !this.settings.audioManaged) {
+            try { target.volume = audio.volume; target.muted = audio.muted; } catch (_) { /* ignore */ }
+          }
+          this.attach(target);
+          this.emit('advance', { dir, reason });
+          await this.ensurePlaying(target, hidden);
+        } else {
+          const r = RP.postDialog();
+          if (r) this.attachItem(r);
+          this.emit('advance', { dir, reason });
+        }
+        return true;
+      } catch (err) {
+        console.error('[ReelPilot] advance failed', err);
+        return false;
+      } finally {
+        this.finishGo();
       }
     }
 
@@ -653,8 +817,12 @@
       const sameItem = !this.video && this.item && this.item.contains(v); // image slot got its video
       this.detachVideo();
       this.video = v;
-      this.item = findSlot(v);
-      if (this.item && this.item.parentElement) this.feed = this.item.parentElement;
+      if (this.popup) {
+        this.item = RP.postDialog();
+      } else {
+        this.item = findSlot(v);
+        if (this.item && this.item.parentElement) this.feed = this.item.parentElement;
+      }
       for (const t of VIDEO_EVENTS) v.addEventListener(t, this.onVideoEvent);
       if (sameItem) this.seen--; // same reel, not a new one
       this.resetCounters();
@@ -675,7 +843,7 @@
       if (!this.video && this.item === slot) return;
       this.detachVideo();
       this.item = slot;
-      if (slot.parentElement) this.feed = slot.parentElement;
+      if (!this.popup && slot.parentElement) this.feed = slot.parentElement;
       this.itemSince = Date.now();
       this.resetCounters();
       this.seen++;
@@ -740,6 +908,7 @@
       // The slot holds the whole reel (caption, author, "Ad" label); fall back to the video's container.
       const root = this.item && this.item.isConnected ? this.item : itemOf(this.video);
       const m = readMeta(root);
+      if (this.popup) m.sponsored = false; // a profile's own posts; a comment could read "ad"
       const changed = m.author !== this.meta.author || m.sponsored !== this.meta.sponsored;
       if (m.author || !this.meta.author) this.meta.author = m.author;
       this.meta.sponsored = m.sponsored;
@@ -768,6 +937,7 @@
 
     scan() {
       if (!this.enabled || this.busy || this.destroyed) return;
+      if (this.popup) { this.scanPopup(); return; }
       if (this.video && !this.video.isConnected) this.dropVideo();
       const best = findCurrentVideo(this.video);
       if (best) {
@@ -782,6 +952,29 @@
           this.item = null;
           this.emit('change');
         }
+      }
+      this.checkItemAuto();
+    }
+
+    /** Post popup: follow the post on screen, however it got there (our arrows, Instagram's, keys). */
+    scanPopup() {
+      const root = RP.postDialog();
+      if (!root) {
+        if (this.video || this.item) { this.detachVideo(); this.item = null; this.emit('change'); }
+        return;
+      }
+      const code = RP.postCode(location.pathname);
+      if (code !== this.postCode) {
+        this.postCode = code;
+        this.detachVideo();
+        this.item = null;
+      }
+      if (this.video && !this.video.isConnected) this.dropVideo();
+      const v = findCurrentVideo(this.video, null, root);
+      if (v) {
+        if (v !== this.video) this.attach(v);
+      } else if (!this.video && this.item !== root) {
+        this.attachItem(root); // a photo post
       }
       this.checkItemAuto();
     }
@@ -825,9 +1018,10 @@
       if (!v) {
         // Image reel on screen? Upgrade it if its video showed up, otherwise run its countdown.
         const slotVideo = this.item && this.item.isConnected ? videoIn(this.item) : null;
-        const c = (slotVideo && sizeOk(slotVideo.getBoundingClientRect()) && slotVideo) || findCurrentVideo();
+        const c = (slotVideo && sizeOk(slotVideo.getBoundingClientRect()) && slotVideo) || this.currentVideo();
         if (!c) {
-          const slot = this.item && this.item.isConnected ? this.item : findVisibleSlot(this.feed);
+          const slot = this.item && this.item.isConnected ? this.item
+            : this.popup ? RP.postDialog() : findVisibleSlot(this.feed);
           if (slot) this.attachItem(slot);
           this.pokeIO();
           this.checkItemAuto();

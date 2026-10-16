@@ -265,7 +265,7 @@
       let tail = settings.mode === 'timer'
         ? `every ${settings.timerSec}s`
         : `after ${settings.loops} play${settings.loops > 1 ? 's' : ''}`;
-      if (s.kind === 'image') tail = s.sponsored ? 'image ad' : 'image reel';
+      if (s.kind === 'image') tail = s.mode === 'popup' ? 'photo post' : s.sponsored ? 'image ad' : 'image reel';
       if (left == null) return `On · ${tail}`;
       return `Next in ${left < 60 ? `${Math.ceil(left)}s` : RP.formatTime(left)} · ${tail}`;
     }
@@ -292,7 +292,9 @@
 
     function render() {
       const s = state;
-      const fallbackName = s.kind === 'image' ? (s.sponsored ? 'Sponsored post' : 'Image reel') : 'Instagram Reel';
+      const fallbackName = s.kind === 'image'
+        ? (s.mode === 'popup' ? 'Photo post' : s.sponsored ? 'Sponsored post' : 'Image reel')
+        : 'Instagram Reel';
       setText(refs.author, s.hasVideo ? (s.author || fallbackName) : 'No reel detected yet');
       setText(refs.reelNo, s.hasVideo && s.reelNumber ? `#${s.reelNumber}` : '');
       refs.sponsored.hidden = !s.sponsored;
