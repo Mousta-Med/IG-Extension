@@ -187,6 +187,65 @@
   display: flex; flex-direction: column; align-items: center; gap: 6px; width: max-content; pointer-events: none;
 }
 
+/* ── Video bar (bottom of the reel) ────────────────────── */
+/* Idle: a thin progress line on the reel's bottom edge. Awake (pointer over the reel, or paused):
+   seek bar, play/pause, time and volume. Only the controls themselves take clicks. */
+.rp-vbar {
+  position: fixed; left: 0; top: 0; box-sizing: border-box; pointer-events: none; will-change: transform;
+  padding: 28px 8px 0; border-radius: 0 0 10px 10px;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .5));
+  transition: background .3s;
+}
+.rp-vbar.off { display: none; }
+.rp-vbar:not(.awake) { background: transparent; }
+.rp-vbar-row {
+  display: flex; align-items: center; gap: 2px; height: 34px; pointer-events: none;
+  transition: opacity .25s, transform .25s var(--rp-ease);
+}
+.rp-vbar-row > :not(.rp-vbar-spacer) { pointer-events: auto; }
+.rp-vbar:not(.awake) .rp-vbar-row { opacity: 0; transform: translateY(4px); }
+.rp-vbar:not(.awake) .rp-vbar-row > * { pointer-events: none; }
+.rp-vbar-btn {
+  width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: #fff;
+  transition: background .15s, transform .15s var(--rp-spring);
+}
+.rp-vbar-btn:hover { background: rgba(255, 255, 255, .15); }
+.rp-vbar-btn:active { transform: scale(.9); }
+.rp-vbar-btn svg { width: 18px; height: 18px; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .5)); }
+.rp-vbar-time {
+  padding: 0 6px; font-size: 12px; font-weight: 650; font-variant-numeric: tabular-nums; white-space: nowrap;
+  color: rgba(255, 255, 255, .92); text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+.rp-vbar-spacer { flex: 1; min-width: 0; }
+.rp-vbar-vol { display: flex; align-items: center; }
+.rp-vbar-vol .rp-range { flex: none; width: 0; opacity: 0; transition: width .2s var(--rp-ease), opacity .2s, margin .2s; }
+.rp-vbar-vol:hover .rp-range, .rp-vbar-vol:focus-within .rp-range { width: 76px; opacity: 1; margin: 0 4px 0 6px; }
+.rp-vbar-seek { position: relative; height: 16px; margin: 0 -8px; pointer-events: auto; cursor: pointer; touch-action: none; }
+.rp-vbar:not(.awake) .rp-vbar-seek { pointer-events: none; }
+.rp-vbar-rail {
+  position: absolute; left: 10px; right: 10px; bottom: 6px; height: 4px; border-radius: 4px;
+  background: rgba(255, 255, 255, .3); transition: height .15s, left .2s, right .2s, bottom .2s, border-radius .2s;
+}
+.rp-vbar-seek:hover .rp-vbar-rail, .rp-vbar-seek.dragging .rp-vbar-rail { height: 6px; bottom: 5px; }
+.rp-vbar:not(.awake) .rp-vbar-rail { left: 0; right: 0; bottom: 0; height: 2px; border-radius: 0; background: rgba(255, 255, 255, .2); }
+.rp-vbar-fill {
+  position: absolute; inset: 0; border-radius: inherit; transform-origin: 0 50%; transform: scaleX(0);
+  background: var(--rp-grad-h);
+}
+.rp-vbar-knob {
+  position: absolute; top: 50%; left: 0; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 0 3px rgba(255, 46, 116, .3), 0 2px 6px rgba(0, 0, 0, .5);
+  transform: scale(0); transition: transform .15s var(--rp-spring);
+}
+.rp-vbar-seek:hover .rp-vbar-knob, .rp-vbar-seek.dragging .rp-vbar-knob, .rp-vbar-seek:focus-visible .rp-vbar-knob { transform: scale(1); }
+.rp-vbar:not(.awake) .rp-vbar-knob { transform: scale(0); }
+.rp-vbar-tip {
+  position: absolute; bottom: 18px; left: 0; padding: 3px 7px; border-radius: 6px; transform: translateX(-50%);
+  font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; color: #fff; white-space: nowrap;
+  background: rgba(16, 16, 20, .9); opacity: 0; pointer-events: none; transition: opacity .12s;
+}
+.rp-vbar-seek:hover .rp-vbar-tip, .rp-vbar-seek.dragging .rp-vbar-tip { opacity: 1; }
+
 @keyframes rp-pop { from { opacity: 0; transform: translateY(-6px) scale(.97); } to { opacity: 1; transform: none; } }
 @keyframes rp-hud-in { from { opacity: 0; transform: translateY(-8px) scale(.96); } to { opacity: 1; transform: none; } }
 @keyframes rp-pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 92, 147, .65); } 100% { box-shadow: 0 0 0 7px rgba(255, 92, 147, 0); } }
@@ -286,7 +345,32 @@
         <div class="rp-hud-toasts" data-ref="hudToasts" aria-live="polite"></div>`);
       this.hud = hud;
 
-      this.shadow.append(root, hud);
+      const vbar = document.createElement('div');
+      vbar.className = 'rp-ui rp-vbar off';
+      vbar.setAttribute('role', 'group');
+      vbar.setAttribute('aria-label', 'Video controls');
+      RP.setHTML(vbar, `
+        <div class="rp-vbar-row">
+          <button class="rp-vbar-btn" data-vbar="togglePlay" data-ref="vPlay" aria-label="Play" title="Play / pause">${I.play}</button>
+          <span class="rp-vbar-time" data-ref="vTime">0:00 / 0:00</span>
+          <span class="rp-vbar-spacer"></span>
+          <span class="rp-vbar-vol">
+            <input type="range" class="rp-range" data-ref="vVolume" min="0" max="100" step="1" aria-label="Volume">
+            <button class="rp-vbar-btn" data-vbar="mute" data-ref="vMute" aria-label="Mute" title="Mute / unmute">${I.volume}</button>
+          </span>
+        </div>
+        <div class="rp-vbar-seek" data-ref="vSeek" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="rp-vbar-rail" data-ref="vRail"><div class="rp-vbar-fill" data-ref="vFill"></div><div class="rp-vbar-knob" data-ref="vKnob"></div></div>
+          <div class="rp-vbar-tip" data-ref="vTip">0:00</div>
+        </div>`);
+      this.vbar = vbar;
+      this.vbarHover = false;
+      this.vbarRect = null;       // last video rect the bar was pinned to
+      this.vSeekDrag = null;      // { f, sentAt } while dragging the seek bar
+      this.vPlaying = null;
+      this.vMuteIcon = '';
+
+      this.shadow.append(root, hud, vbar);
       this.refs = {};
       this.shadow.querySelectorAll('[data-ref]').forEach((el) => { this.refs[el.dataset.ref] = el; });
 
@@ -338,10 +422,85 @@
         new ResizeObserver(() => { this.hudWidth = hudBar.offsetWidth || this.hudWidth; }).observe(hudBar);
       }
 
+      this.bindVideoBar();
+
       this.onPointer = (e) => { this.pointer = { x: e.clientX, y: e.clientY, t: performance.now() }; };
       document.addEventListener('pointermove', this.onPointer, { capture: true, passive: true });
       this.onResize = () => this.applyPosition();
       window.addEventListener('resize', this.onResize);
+    }
+
+    bindVideoBar() {
+      const { vSeek, vRail, vTip, vVolume } = this.refs;
+      const bar = this.vbar;
+      bar.addEventListener('pointerenter', () => { this.vbarHover = true; });
+      bar.addEventListener('pointerleave', () => { this.vbarHover = false; });
+      bar.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-vbar]');
+        if (!btn) return;
+        if (btn.dataset.vbar === 'mute') this.toggleMute();
+        else this.onCommand(btn.dataset.vbar);
+      });
+
+      const fractionAt = (clientX) => {
+        const r = vRail.getBoundingClientRect();
+        return r.width ? RP.clamp((clientX - r.left) / r.width, 0, 1) : 0;
+      };
+      const seek = (f, final) => {
+        const drag = this.vSeekDrag;
+        if (drag) drag.f = f;
+        // Seeking decodes a frame: while dragging, at most every 80 ms; always on release.
+        if (!final && drag && performance.now() - drag.sentAt < 80) return;
+        if (drag) drag.sentAt = performance.now();
+        this.onCommand('seek', f);
+      };
+      const showTip = (clientX) => {
+        const d = this.getState().duration || 0;
+        const f = fractionAt(clientX);
+        vTip.textContent = RP.formatTime(f * d);
+        vTip.style.left = `${clientX - vSeek.getBoundingClientRect().left}px`;
+      };
+      vSeek.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0 || !(this.getState().duration > 0)) return;
+        this.vSeekDrag = { f: fractionAt(e.clientX), sentAt: 0 };
+        vSeek.classList.add('dragging');
+        try { vSeek.setPointerCapture(e.pointerId); } catch (_) { /* ignore */ }
+        seek(this.vSeekDrag.f, true);
+      });
+      vSeek.addEventListener('pointermove', (e) => {
+        showTip(e.clientX);
+        if (this.vSeekDrag) seek(fractionAt(e.clientX), false);
+      });
+      const endDrag = () => {
+        const drag = this.vSeekDrag;
+        if (!drag) return;
+        this.vSeekDrag = null;
+        vSeek.classList.remove('dragging');
+        this.onCommand('seek', drag.f);
+      };
+      vSeek.addEventListener('pointerup', endDrag);
+      vSeek.addEventListener('pointercancel', endDrag);
+      vSeek.addEventListener('keydown', (e) => {
+        const s = this.getState();
+        const step = e.key === 'ArrowRight' ? 5 : e.key === 'ArrowLeft' ? -5 : 0;
+        if (!step || !(s.duration > 0)) return;
+        e.preventDefault();
+        this.onCommand('seek', RP.clamp((s.time + step) / s.duration, 0, 1));
+      });
+
+      vVolume.addEventListener('input', () => {
+        const v = Number(vVolume.value);
+        vVolume.style.setProperty('--p', `${v}%`);
+        this.onSettings({ volume: v / 100, muted: v === 0, audioManaged: true });
+      });
+    }
+
+    toggleMute() {
+      const s = this.getState();
+      const muted = !(s.muted || s.volume === 0);
+      const patch = { muted, audioManaged: true };
+      if (!muted && (s.volume || 0) < 0.05) patch.volume = 0.6;
+      this.onSettings(patch);
     }
 
     stepSpeed(dir) {
@@ -493,6 +652,7 @@
         if (!this.refs.panel.hidden && this.root.style.display !== 'none') this.controls.progress(s);
         if (!this.refs.orb.hidden) this.paintOrb(s);
         if (this.reelMode) this.paintHud(s);
+        this.paintVideoBar(s);
         this.raf = requestAnimationFrame(frame);
       };
       this.raf = requestAnimationFrame(frame);
@@ -534,6 +694,41 @@
       this.hud.classList.toggle('idle', !awake);
     }
 
+    /** Pin the video bar to the bottom of the current reel; wake it while the pointer is over the reel. */
+    paintVideoBar(s) {
+      const bar = this.vbar;
+      const v = this.getVideo();
+      let r = null;
+      if (this.settings.videoBar && s.kind === 'video' && v && v.isConnected && v.tagName === 'VIDEO') {
+        const b = v.getBoundingClientRect();
+        if (b.width >= 160 && b.height >= 200 && b.bottom > 120 && b.top < window.innerHeight - 120) r = b;
+      }
+      bar.classList.toggle('off', !r);
+      this.vbarRect = r;
+      if (!r) return;
+
+      const left = Math.max(0, r.left);
+      const width = Math.min(window.innerWidth, r.right) - left;
+      const bottom = Math.min(window.innerHeight, r.bottom);
+      const w = `${Math.round(width)}px`;
+      if (bar.style.width !== w) bar.style.width = w;
+      bar.style.transform = `translate(${left.toFixed(1)}px, ${bottom.toFixed(1)}px) translateY(-100%)`;
+
+      const d = s.duration || 0;
+      const f = this.vSeekDrag ? this.vSeekDrag.f : d ? RP.clamp(s.time / d, 0, 1) : 0;
+      this.refs.vFill.style.transform = `scaleX(${f.toFixed(4)})`;
+      this.refs.vKnob.style.left = `${(f * 100).toFixed(2)}%`;
+      this.refs.vSeek.setAttribute('aria-valuenow', String(Math.round(f * 100)));
+      const time = `${RP.formatTime(this.vSeekDrag ? f * d : s.time)} / ${RP.formatTime(d)}`;
+      if (this.refs.vTime.textContent !== time) this.refs.vTime.textContent = time;
+
+      const p = this.pointer;
+      const near = !!p && performance.now() - p.t < HUD_IDLE_MS
+        && p.x >= r.left && p.x <= r.right && p.y >= r.top && p.y <= r.bottom;
+      const awake = near || this.vbarHover || !!this.vSeekDrag || !s.playing || !this.settings.dimIdle;
+      bar.classList.toggle('awake', awake);
+    }
+
     // ── Rendering ──
     update(state, settings) {
       const prev = this.state;
@@ -558,6 +753,7 @@
       this.root.classList.toggle('auto', !!s.auto);
       if (!this.visible) return;
       this.renderHud(s);
+      this.renderVideoBar(s);
       if (this.root.style.display === 'none') return;
       this.controls.update(s, this.settings);
 
@@ -577,6 +773,29 @@
       const n = s.reelNumber || 0;
       const unit = profile ? 'post' : 'reel';
       RP.setHTML(this.refs.stats, `<b>${n}</b> ${unit}${n === 1 ? '' : 's'} · <b>${RP.formatSpan(s.watchSec || 0)}</b> watched`);
+    }
+
+    renderVideoBar(s) {
+      const playing = !!s.playing;
+      if (this.vPlaying !== playing) {
+        this.vPlaying = playing;
+        RP.setHTML(this.refs.vPlay, playing ? I.pause : I.play);
+        this.refs.vPlay.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+      }
+      const vol = s.volume != null ? s.volume : this.settings.volume;
+      const muted = s.muted != null ? s.muted : this.settings.muted;
+      const shown = muted ? 0 : Math.round(vol * 100);
+      const icon = shown === 0 ? 'muted' : shown < 50 ? 'volumeLow' : 'volume';
+      if (this.vMuteIcon !== icon) {
+        this.vMuteIcon = icon;
+        RP.setHTML(this.refs.vMute, I[icon]);
+        this.refs.vMute.setAttribute('aria-label', shown === 0 ? 'Unmute' : 'Mute');
+      }
+      const range = this.refs.vVolume;
+      if (this.shadow.activeElement !== range && String(range.value) !== String(shown)) {
+        range.value = shown;
+        range.style.setProperty('--p', `${shown}%`);
+      }
     }
 
     renderHud(s) {

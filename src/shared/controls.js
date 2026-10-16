@@ -112,6 +112,7 @@
         ${toggle('skipSponsored', 'Skip sponsored reels', 'Jumps over ads while auto-scroll is on')}
         ${toggle('smooth', 'Smooth scrolling', 'Animate the move between reels')}
         ${toggle('autoPip', 'Auto Picture-in-Picture', 'Pops the reel out when you switch tabs')}
+        ${toggle('videoBar', 'Video bar on the reel', 'Seek bar, time and volume at the bottom of the reel')}
         ${toggle('postMusic', 'Music on photo posts', 'Plays the song added to a photo post, like the app')}
         ${toggle('dimIdle', 'Fade controls when idle', 'Controls fade out until you move the mouse')}
         ${variant === 'popup' ? toggle('showPanel', 'Show on-page controls', 'Panel or bar on top of the reels') : ''}

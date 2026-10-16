@@ -23,6 +23,7 @@
     showPanel: true,      // master switch for on-page controls
     controls: 'panel',    // 'panel' → floating panel · 'reel' → compact bar on top of the reel
     autoPip: false,       // pop the reel into Picture-in-Picture when you leave the tab
+    videoBar: true,       // seek bar, time and volume at the bottom of the reel
     postMusic: true,      // play the song attached to photo posts, as the app does
     musicMuted: false,    // the mute button on that song's pill
   });
@@ -42,7 +43,7 @@
     s.timerSec = Math.round(RP.clamp(num(s.timerSec, d.timerSec), ...RP.LIMITS.timerSec));
     s.speed = RP.clamp(num(s.speed, d.speed), 0.25, 4);
     s.volume = RP.clamp(num(s.volume, d.volume), 0, 1);
-    for (const k of ['muted', 'audioManaged', 'background', 'skipSponsored', 'smooth', 'dimIdle', 'showPanel', 'autoPip', 'postMusic', 'musicMuted']) {
+    for (const k of ['muted', 'audioManaged', 'background', 'skipSponsored', 'smooth', 'dimIdle', 'showPanel', 'autoPip', 'videoBar', 'postMusic', 'musicMuted']) {
       s[k] = typeof s[k] === 'boolean' ? s[k] : d[k];
     }
     return s;

@@ -43,7 +43,8 @@ show up, refresh the Instagram tab once.
 | **Progress bar** | Click or drag to seek |
 | **Speed** | 0.5× – 2× (pitch is preserved) |
 | **Volume** | Volume slider and mute button |
-| **Options** | Background play, skip sponsored reels, smooth scrolling, auto Picture-in-Picture, music on photo posts, fade the controls when idle |
+| **Video bar** | At the bottom of the reel: a seek bar (click or drag; hover shows the time), play/pause, time and volume. It shrinks to a thin progress line until you move the mouse over the reel |
+| **Options** | Background play, skip sponsored reels, smooth scrolling, auto Picture-in-Picture, video bar on the reel, music on photo posts, fade the controls when idle |
 
 - **Drag** the panel by its header to move it. It remembers where you put it.
 - **–** shrinks it to a small floating button that shows the reel's progress. Click the button to open the panel again.
