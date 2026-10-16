@@ -57,6 +57,7 @@
     getState: () => engine.getState(),
     getVideo: () => engine.anchor(),
   });
+  const music = RP.PostMusic ? new RP.PostMusic({ onSettings: (patch) => updateSettings(patch) }) : null;
 
   function render() {
     overlay.update(engine.getState(), settings);
@@ -74,6 +75,7 @@
 
   function applySettings() {
     engine.setSettings(settings);
+    if (music) music.setSettings(settings);
     pushHooksConfig();
     refreshVisibility();
     render();
@@ -140,11 +142,13 @@
   function checkRoute() {
     if (!alive) return;
     overlay.ensureAttached();
+    if (music) music.ensureAttached();
     const path = location.pathname;
     if (path === lastPath) return;
     lastPath = path;
     const onReels = RP.isReelsPath(path);
     engine.setEnabled(onReels);
+    if (music) music.setEnabled(!onReels);
     refreshVisibility();
     if (onReels) maybeAutostart();
   }
@@ -225,6 +229,7 @@
     try { chrome.storage.onChanged.removeListener(onStorage); } catch (_) { /* context gone */ }
     engine.destroy();
     overlay.destroy();
+    if (music) music.destroy();
   }
   document.addEventListener('reelpilot:takeover', teardown);
   const ctxTimer = setInterval(() => { if (!contextOk()) teardown(); }, 4000);

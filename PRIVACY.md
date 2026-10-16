@@ -1,6 +1,6 @@
 # ReelPilot Privacy Policy
 
-_Last updated: October 13, 2026_
+_Last updated: October 16, 2026_
 
 > **Summary:** ReelPilot does not collect, store on any server, sell or share any personal data.
 > Everything it does happens inside your own browser.
@@ -9,7 +9,8 @@ _Last updated: October 13, 2026_
 
 ReelPilot is a Chrome extension that controls playback of Reels on instagram.com. It moves to the
 next reel automatically and adds playback controls (play/pause, next/previous, speed, volume,
-Picture-in-Picture), including while the tab is in the background.
+Picture-in-Picture), including while the tab is in the background. It also plays the song attached
+to photo posts, as the Instagram app does.
 
 ## Information ReelPilot handles
 
@@ -19,14 +20,21 @@ Picture-in-Picture), including while the tab is in the background.
   viewing: the reel video, the reel's author name and whether the reel is labelled as an ad. It uses
   this only to show it in its controls and to decide when to move to the next reel. It is never
   saved or sent anywhere.
+- **Song details of photo posts, in memory only.** To play a photo post's song, ReelPilot reads the
+  song's title, artist, audio link and the part of the song the author chose from the post data
+  Instagram already loads on the page. When that data doesn't include them, it asks instagram.com
+  for the details of the post you're looking at, the same request Instagram's own website makes,
+  using your existing Instagram session. The song is then played from Instagram's servers. These
+  requests go only to Instagram and are only made for posts you view. Nothing is saved or sent
+  anywhere else.
 - **Session state for the toolbar badge** (whether auto-scroll is on, how many reels you've watched
   this session and the current reel's author name). This is kept in Chrome's session storage on your
   device and is cleared when you close the browser.
 
 ## What ReelPilot does not do
 
-- It does not send any data to the developer or to any third party. It makes no network requests of
-  its own.
+- It does not send any data to the developer or to any third party. The only requests it makes are
+  to Instagram, for the posts you view (see above).
 - It does not use analytics, tracking, cookies or advertising.
 - It does not read your messages, your account details, your passwords or your browsing on other
   websites.
@@ -36,8 +44,8 @@ Picture-in-Picture), including while the tab is in the background.
 
 ## Permissions
 
-- **Access to instagram.com**: to show the controls on Instagram and operate the reel videos there.
-  ReelPilot runs on no other website.
+- **Access to instagram.com**: to show the controls on Instagram, operate the reel videos there and
+  play the songs of photo posts. ReelPilot runs on no other website.
 - **Storage**: to remember your settings.
 - **Scripting**: to start ReelPilot in Instagram tabs that were already open when you install or
   update it, so you don't have to reload them.

@@ -81,7 +81,7 @@ ReelPilot is an independent project and is not affiliated with, endorsed by or s
 **Single purpose description**
 
 ```
-ReelPilot controls playback of Instagram Reels on instagram.com: it automatically moves to the next reel and provides on-page and toolbar controls (play/pause, next/previous, speed, volume, Picture-in-Picture), including while the tab is in the background.
+ReelPilot controls playback of Instagram Reels on instagram.com: it automatically moves to the next reel and provides on-page and toolbar controls (play/pause, next/previous, speed, volume, Picture-in-Picture), including while the tab is in the background. It also plays the music attached to photo posts, as the Instagram app does.
 ```
 
 **Permission justifications**
@@ -98,15 +98,15 @@ When the extension is installed or updated, it injects its own bundled content s
 
 Host permissions (`*://www.instagram.com/*`, `*://instagram.com/*`)
 ```
-The extension's only function is controlling Reels playback on instagram.com. Host access is needed to run the content scripts that display the controls and operate the reel videos, and to find the open Instagram tab so the toolbar popup and keyboard shortcuts can control it from other tabs. The extension does not run on any other site.
+The extension's only function is controlling Reels playback on instagram.com. Host access is needed to run the content scripts that display the controls, operate the reel videos and play the music attached to photo posts (read from Instagram's post data, or from Instagram's own post-info endpoint for the post being viewed), and to find the open Instagram tab so the toolbar popup and keyboard shortcuts can control it from other tabs. The extension does not run on any other site.
 ```
 
 **Are you using remote code?** → **No, I am not using remote code.**
 
 **Data usage**
 - Leave **all data categories unchecked**. ReelPilot doesn't collect or transmit user data. It reads the
-  reel on screen (video, author name, "Ad" label) only in memory to drive its controls, and saves only its own
-  settings locally.
+  reel on screen (video, author name, "Ad" label) and the song details of the photo post on screen only in
+  memory to drive its controls, and saves only its own settings locally. Its only requests go to instagram.com.
 - Check all three certifications (no selling/transferring data, no use unrelated to the single purpose, no
   creditworthiness/lending use).
 

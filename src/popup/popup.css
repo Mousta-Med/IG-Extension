@@ -105,6 +105,18 @@ body { width: 360px; color: #f6f6f8; }
   background: var(--rp-grad-soft); color: #fff;
 }
 
+/* Music on photo posts — shown while Instagram is open outside Reels */
+.rp-toggle.pp-music {
+  margin: 14px 0 0; padding: 10px 12px; border-radius: 16px;
+  background: rgba(255, 255, 255, .035); border: 1px solid var(--rp-border);
+}
+.rp-toggle.pp-music:hover { background: rgba(255, 255, 255, .06); }
+.pp-music-icon {
+  width: 26px; height: 26px; border-radius: 8px; flex: none; display: grid; place-items: center;
+  background: var(--rp-grad-soft); color: #fff;
+}
+.pp-music-icon svg { width: 15px; height: 15px; }
+
 /* Footer */
 .pp-foot { margin-top: 10px; border-top: 1px solid var(--rp-border); }
 .pp-foot-head {

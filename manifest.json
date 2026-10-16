@@ -38,7 +38,8 @@
         "*://instagram.com/*"
       ],
       "js": [
-        "src/page/page-hooks.js"
+        "src/page/page-hooks.js",
+        "src/page/page-music.js"
       ],
       "run_at": "document_start",
       "world": "MAIN",
@@ -56,6 +57,7 @@
         "src/shared/controls.js",
         "src/content/engine.js",
         "src/content/overlay.js",
+        "src/content/post-music.js",
         "src/content/main.js"
       ],
       "run_at": "document_idle",

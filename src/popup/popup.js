@@ -96,6 +96,8 @@
     $('emptyBtnText').textContent = e.button;
     RP.setHTML($('emptyBtnIcon'), I[e.icon]);
     $('features').hidden = !e.features;
+    $('musicRow').hidden = kind !== 'notReels';
+    $('postMusic').checked = settings.postMusic;
     emptyAction = e.action;
     setChip('idle', kind === 'none' ? 'No tab' : 'Standby');
   }
@@ -187,6 +189,7 @@
   $('hintBtn').addEventListener('click', focusTab);
   $('showPanel').addEventListener('click', () => command('showPanel'));
   $('editKeys').addEventListener('click', () => chrome.tabs.create({ url: 'chrome://extensions/shortcuts' }));
+  $('postMusic').addEventListener('change', (e) => saveSettings({ postMusic: e.target.checked }));
   $('keysToggle').addEventListener('click', () => {
     const open = $('foot').classList.toggle('open');
     $('keysToggle').setAttribute('aria-expanded', String(open));

@@ -32,6 +32,7 @@
     onReel: svg('<rect x="6" y="2.5" width="12" height="19" rx="2.6"/><path d="M9.2 6.6h5.6" stroke-width="2.4"/>'),
     panel: svg('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M14.5 4v16"/>'),
     reels: svg('<rect x="3" y="3" width="18" height="18" rx="5"/><path d="M3 8.5h18M8.5 3l3 5.5M14 3l3 5.5"/><path d="M10.5 12v5l4-2.5z" fill="currentColor" stroke="none"/>'),
+    music: svg('<path d="M9 18V5.5l11-2.2V16"/><circle cx="6" cy="18" r="3" fill="currentColor"/><circle cx="17" cy="16" r="3" fill="currentColor"/>'),
   };
 
   RP.logoSVG = (id = 'rpLogo') => `

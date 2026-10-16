@@ -23,6 +23,8 @@
     showPanel: true,      // master switch for on-page controls
     controls: 'panel',    // 'panel' → floating panel · 'reel' → compact bar on top of the reel
     autoPip: false,       // pop the reel into Picture-in-Picture when you leave the tab
+    postMusic: true,      // play the song attached to photo posts, as the app does
+    musicMuted: false,    // the mute button on that song's pill
   });
 
   RP.SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
@@ -40,7 +42,7 @@
     s.timerSec = Math.round(RP.clamp(num(s.timerSec, d.timerSec), ...RP.LIMITS.timerSec));
     s.speed = RP.clamp(num(s.speed, d.speed), 0.25, 4);
     s.volume = RP.clamp(num(s.volume, d.volume), 0, 1);
-    for (const k of ['muted', 'audioManaged', 'background', 'skipSponsored', 'smooth', 'dimIdle', 'showPanel', 'autoPip']) {
+    for (const k of ['muted', 'audioManaged', 'background', 'skipSponsored', 'smooth', 'dimIdle', 'showPanel', 'autoPip', 'postMusic', 'musicMuted']) {
       s[k] = typeof s[k] === 'boolean' ? s[k] : d[k];
     }
     return s;
@@ -72,6 +74,18 @@
 
   // /reels/, /reels/<code>/, /reel/<code>/
   RP.isReelsPath = (path) => /^\/reels?(\/|$)/.test(path || '');
+
+  /** The popup Instagram shows a post in (opened from a profile, Explore…), if one is open. */
+  RP.postDialog = () => {
+    const dialogs = document.querySelectorAll('[role="dialog"]');
+    for (let i = dialogs.length - 1; i >= 0; i--) {
+      for (const el of dialogs[i].querySelectorAll('video, img')) {
+        const r = el.getBoundingClientRect();
+        if (r.width >= 200 && r.height >= 200) return dialogs[i];
+      }
+    }
+    return null;
+  };
 
   // Set HTML in a way that survives pages enforcing Trusted Types.
   let ttPolicy = null;

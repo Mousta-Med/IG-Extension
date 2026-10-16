@@ -43,7 +43,7 @@ show up, refresh the Instagram tab once.
 | **Progress bar** | Click or drag to seek |
 | **Speed** | 0.5× – 2× (pitch is preserved) |
 | **Volume** | Volume slider and mute button |
-| **Options** | Background play, skip sponsored reels, smooth scrolling, auto Picture-in-Picture, fade the controls when idle |
+| **Options** | Background play, skip sponsored reels, smooth scrolling, auto Picture-in-Picture, music on photo posts, fade the controls when idle |
 
 - **Drag** the panel by its header to move it. It remembers where you put it.
 - **–** shrinks it to a small floating button that shows the reel's progress. Click the button to open the panel again.
@@ -75,6 +75,22 @@ showing the last video until the next video reel arrives.
 Some reels, including many ads, are still images. ReelPilot shows them for 5 seconds (or for your
 **Timer** setting) and then moves on. With **Skip sponsored reels** on, ads labelled *Sponsored* or
 *Ad* (in many languages) are skipped straight away.
+
+### Music on photo posts
+
+In the Instagram app, a photo or carousel post can have a song. instagram.com shows those posts
+without sound. ReelPilot plays the song on the web too: when a photo post with music is on screen
+(in the feed, in the post window or on the post's own page), it plays the part of the song the author
+picked, on a loop, until you scroll on. A small pill on the photo shows the song and artist. Click it
+to mute or unmute. The music stops when you leave the post or switch tabs, and pauses while a video
+in the same post plays with sound.
+
+A few posts stay silent: the app plays their song, but Instagram never sends it to the website.
+
+The song details usually come from the post data Instagram has already loaded. When they don't,
+ReelPilot asks instagram.com for that post's details, the same way Instagram's own website does,
+once you've stopped on the post for about a second. Turn it off with **Music on photo posts** in the
+toolbar popup or in **Options**.
 
 ### Control it from any tab
 
@@ -120,6 +136,11 @@ You can turn background playback off in **Options → Keep playing in background
   once. Click anywhere on the reels page, then unmute.
 - **"No more reels loaded yet":** Instagram hasn't loaded the next reel yet (slow connection, or the
   end of the feed). Auto-scroll tries again a few seconds later.
+- **No music on a photo post:** Chrome only plays sound after you've clicked the page once. If the
+  pill says *click to play*, click it or anywhere on the page. If no pill appears, the post has no song,
+  Instagram doesn't send that post's song to the website (it happens with some carousels), Instagram
+  mutes it in your region, or Instagram's web data changed. To see what ReelPilot knows about a post,
+  open its page and run `__reelPilotMusic.inspect('<post code>')` in the DevTools console.
 - **Shortcut doesn't work:** another extension or app may be using it. Pick a new one at
   `chrome://extensions/shortcuts`.
 - **PiP from the toolbar popup doesn't open:** Chrome sometimes only allows Picture-in-Picture to
@@ -157,8 +178,10 @@ The helper tools have their own requirements:
 ```
 manifest.json                 Manifest V3
 src/page/page-hooks.js        Runs inside the page: visibility, IntersectionObserver and rAF hooks
+src/page/page-music.js        Runs inside the page: finds the song of each photo post in Instagram's data
 src/content/engine.js         Playback engine: finds the current reel (video or image), counts plays, advances, PiP
 src/content/overlay.js        On-page controls: floating panel or bar on the reel (Shadow DOM)
+src/content/post-music.js     Music on photo posts: picks the post on screen, plays its song, shows the pill
 src/content/main.js           Wiring: settings, page navigation, messages, lifecycle
 src/shared/                   Shared by panel and popup: settings, icons, design tokens, controls
 src/popup/                    Toolbar popup (remote control)
@@ -172,9 +195,9 @@ store/                        Store listing text, privacy policy and graphics
 
 ## Privacy
 
-ReelPilot stores your settings locally in Chrome. It sends no data anywhere and doesn't touch your
-Instagram account. It only controls the videos already on the page. Full policy:
-[PRIVACY.md](PRIVACY.md).
+ReelPilot stores your settings locally in Chrome. It sends no data to the developer or anyone else
+and never likes, follows or posts anything. The only requests it makes go to Instagram, to get the song
+of a photo post you're viewing. Full policy: [PRIVACY.md](PRIVACY.md).
 
 ---
 
