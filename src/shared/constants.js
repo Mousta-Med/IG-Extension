@@ -3,7 +3,7 @@
   'use strict';
   const RP = (globalThis.ReelPilot = globalThis.ReelPilot || {});
 
-  RP.VERSION = '1.0.0';
+  RP.VERSION = '1.1.0';
   RP.STORAGE_KEY = 'reelpilot:settings';
   RP.PANEL_KEY = 'reelpilot:panel';
   RP.REELS_URL = 'https://www.instagram.com/reels/';
